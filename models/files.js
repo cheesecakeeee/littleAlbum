@@ -1,6 +1,6 @@
 // 定义 一个返回文件名称数组的功能模块 并暴露出去等待调用
 
-var fs = require("fs");
+const fs = require("fs");
 
 // exports.getAllAlbum = (req,res)=>{
 //     return ["小明","小工"]
@@ -25,7 +25,7 @@ exports.getAllAlbums = function(callback){
             }
             fs.stat("./uploads/"+files[i],(err,stats)=>{
                 if(err){
-                    callback("找不到文件"+files[i],null)
+                    callback("找不到文件"+files[i],null);
                 }
                 if(stats.isDirectory()){
                     allAlbums.push(files[i])
@@ -33,6 +33,33 @@ exports.getAllAlbums = function(callback){
                 iterator(i+1);
             })
         }(0));
+
+    })
+}
+
+exports.getAllImagesByAlbumName = function(albumName,callback){
+    fs.readdir("./uploads/"+albumName,(err,files)=>{
+        if(err){
+            callback("没有找到"+albumName+"文件夹",null);
+            return;
+        }
+        let allImages = [];
+        (function iterator(i){
+            if(i == files.length){
+                callback(null,allImages);
+                return;
+            }
+            fs.stat("./uploads/"+albumName+"/"+files[i],(err,stats)=>{
+                if(err){
+                    callback("找不到"+files[i]+"文件",null);
+                    return;
+                }
+                if(stats.isFile()){
+                    allImages.push(files[i]);
+                }
+                iterator(i+1);
+            })
+        })(0)
 
     })
 }

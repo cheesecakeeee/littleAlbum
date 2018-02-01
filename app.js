@@ -16,7 +16,8 @@ app.use(express.static("./uploads"));
 // 调用自定义模板里的函数
 app.get("/",router.showIndex);  //路由首页
 app.get("/:albumName",router.showAlbum) //路由到相册
-
+app.get("/up",router.showUp)    //路由到上传
+app.post("/up",router.doPost);  //文件上传
 
 // 404页面
 app.use(function(req,res){

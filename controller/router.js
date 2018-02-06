@@ -12,6 +12,7 @@ const path = require("path");   //文件上传路径
 const fs = require("fs");   //改名
 const sd = require("silly-datetime");   //时间戳
 
+
 // 首页
 exports.showIndex = (req,res,next)=>{
     //调用models里的files文件的方法。读取uploads里的文件夹名称数组呈递给ejs做页面渲染
@@ -79,16 +80,25 @@ exports.doPost = (req,res)=>{
     // console.log(path.normalize(__dirname + "/../tempup"));
 
     form.parse(req, function(err, fields, files,next) {
-    //   console.log(files);
-    //   console.log(fields);
+      // console.log(files);
+      // console.log(fields);
         if(err){
             next();
             return;
         }
-        fs.rename(oldPath, newPath, function(err){
-            
+        // 设置时间戳
+        var ttt = sd.format(new Date(), 'YYYYMMDDHHmmss');
+        var ran = parseInt(Math.random()*89999+10000);
+        var extname = path.extname(files.tupian.name); //获取文件后缀
+        var wenjianjia = fields.wenjianjia; //获取文件夹
+        var oldPath = files.tupian.path;    //获取上传的文件及路径 
+        var newPath = path.normalize(__dirname + "/../uploads/"+wenjianjia+"/"+ttt+ran+extname);
+        fs.rename(oldPath,newPath,function(err){
+            if(err){
+                return;
+                res.send("改名失败！！");
+            }
         })
     });
-
     res.send("成功")
 }

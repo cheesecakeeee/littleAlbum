@@ -76,16 +76,26 @@ exports.doPost = (req,res)=>{
 
     // form.uploadDir = "/uploads";
     // 图片暂时上传到littleAlbum下的临时文件夹tempup下
-    form.uploadDir = path.normalize(__dirname + "/../tempup");
+    form.uploadDir = path.normalize(__dirname + "/../tempup/");
     // console.log(path.normalize(__dirname + "/../tempup"));
 
     form.parse(req, function(err, fields, files,next) {
-      // console.log(files);
-      // console.log(fields);
+      console.log(files);
+      console.log(fields);
         if(err){
             next();
             return;
         }
+
+        // 判断文件大小
+        var size = parseInt(files.tupian.size);
+        if(size > 2048000){
+            res.send("图片应小于2M");
+            // 删除/图片
+            fs.unlink(files.tupian.path,function(){});
+            return;
+        }
+
         // 设置时间戳
         var ttt = sd.format(new Date(), 'YYYYMMDDHHmmss');
         var ran = parseInt(Math.random()*89999+10000);
@@ -95,10 +105,10 @@ exports.doPost = (req,res)=>{
         var newPath = path.normalize(__dirname + "/../uploads/"+wenjianjia+"/"+ttt+ran+extname);
         fs.rename(oldPath,newPath,function(err){
             if(err){
-                return;
                 res.send("改名失败！！");
+                return;
             }
+            res.send("成功")
         })
     });
-    res.send("成功")
 }
